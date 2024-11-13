@@ -11,6 +11,10 @@ public class TodoInputPage {
         this.driver = driver;
     }
 
+    public void navigateHome() {
+        driver.get("https://todomvc.com/");
+    }
+
     public void navigate() {
         driver.get("https://todomvc.com/examples/react/dist/");
     }

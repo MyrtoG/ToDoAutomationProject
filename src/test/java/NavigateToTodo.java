@@ -17,11 +17,12 @@ public class NavigateToTodo {
     static void launchBrowser() {
         WebDriverManager.chromedriver().setup();
         driver = new ChromeDriver();
-        driver.get("https://todomvc.com/");
     }
 
     @Test
     void shouldLoadHomepage() throws Exception {
+        TodoInputPage inputPage = new TodoInputPage(driver);
+        inputPage.navigateHome();
         assertEquals("TodoMVC", driver.getTitle());
         takeScreenshot(driver, "todo.png");
     }
@@ -37,7 +38,7 @@ public class NavigateToTodo {
         assertEquals("hello123", inputPage.getFirstItem());
         inputPage.deleteList();
 
-        // TEST: blank space as input should add to list
+        // TEST: blank space as input should add to list - confirm with Myrto, technically should fail as we don't want blank spaces.
         inputPage.inputItem(" ");
         assertEquals(" ", driver.findElement(By.id("todo-input")).getAttribute("value"));
         inputPage.navigate();
@@ -46,29 +47,36 @@ public class NavigateToTodo {
         //driver.findElement(By.id("todo-input")).click().sendKeys(Keys.ENTER);
         //assertEquals("What needs to be done?", driver.findElement(By.id("todo-input")).getAttribute("value"));
 
-        // TEST: 255 characters and under as input should add to list
+        // TEST: 255 characters as input should add to list
         inputPage.inputItem("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolore.");
         assertEquals("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolore.", inputPage.getFirstItem());
         inputPage.deleteList();
+
+        // TEST: 254 characters as input should add to list
+        inputPage.inputItem("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor.");
+        assertEquals("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor.", inputPage.getFirstItem());
+        inputPage.deleteList();
+
     }
-//    REMEMBER: These tests fail and need to be logged as bugs for the team to fix
-//    @Test
-//    void ShouldFailNeedsFix() throws Exception {
-//        TodoInputPage inputPage = new TodoInputPage(driver);
-//        inputPage.navigate();
 
-        // TEST: over 255 characters as input should fail
-//        inputPage.inputItem("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolores.");
-//        if (driver.findElement(By.cssSelector("li:nth-child(1)")).isDisplayed()) {
-//            fail("Your input is too long to add to the list");
-//        } inputPage.deleteList();
+        // REMEMBER: These tests fail and need to be logged as bugs for the team to fix
+    @Test
+    void ShouldFailNeedsFix() throws Exception {
+        TodoInputPage inputPage = new TodoInputPage(driver);
+        inputPage.navigate();
 
-        // TEST: symbols as input ("!@£$%^&*(){}[]:";'<>?")
-//        inputPage.inputItem("!@£$%^&*(){}[]:\";'<>?");
-//        assertEquals("!@£$%^&*(){}[]:\";'<>?", inputPage.getFirstItem());
-//        inputPage.deleteList();
+        // TEST: over 255 characters as input should fail, currently it passes
+        inputPage.inputItem("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolores.");
+        if (driver.findElement(By.cssSelector("li:nth-child(1)")).isDisplayed()) {
+            fail("Your input is too long to add to the list");
+        } inputPage.deleteList();
 
-//    }
+        // TEST: symbols as input ("!@£$%^&*(){}[]:";'<>?") should add to list, currently it doesn't
+        inputPage.inputItem("!@£$%^&*(){}[]:\";'<>?");
+        assertEquals("!@£$%^&*(){}[]:\";'<>?", inputPage.getFirstItem());
+        inputPage.deleteList();
+
+    }
 
     @AfterAll
     static void closeBrowser() {
