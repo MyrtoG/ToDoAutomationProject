@@ -3,6 +3,7 @@ import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
@@ -10,13 +11,17 @@ import java.time.Duration;
 public class TodoInputPage {
     protected WebDriver driver;
     private By inputBoxBy = By.id("todo-input");
-    private By searchItemsInList = By.cssSelector("li:nth-child(1)");
-    private By selectItemsInList1 = By.cssSelector("li:nth-child(1) .toggle");
-    private By selectItemsInList2 = By.cssSelector("li:nth-child(2) .toggle");
-    private By deleteItemsInList = By.cssSelector("li:nth-child(1) .destroy");
+    private By searchItemInList = By.cssSelector("li:nth-child(1)");
+    private By deleteItemInList = By.cssSelector("li:nth-child(1) .destroy");
     private By completeAllItems = By.className("toggle-all");
     private By deleteCompleted = By.className("clear-completed");
     private By countRemaining = By.className("todo-count");
+    private By clickItemByIndex(Integer index) {
+        return By.cssSelector(String.format("li:nth-child(%s)",index));
+    }
+    private By toggleItemByIndex(Integer index) {
+        return By.cssSelector(String.format("li:nth-child(%s) .toggle",index));
+    }
 
 
     // Navigating around the site
@@ -38,19 +43,21 @@ public class TodoInputPage {
         inputItem.sendKeys(item+Keys.ENTER);
     }
 
-    public void editItem(String newItem) {
-        WebElement editItem = driver.findElement(searchItemsInList);
-        Actions act = new Actions(driver);
-        act.doubleClick(editItem).perform();
-        editItem.sendKeys(Keys.CONTROL,"a", Keys.DELETE);
-        editItem.sendKeys(newItem+Keys.ENTER);
+    public void editItem(String newItem) throws InterruptedException {
+        WebElement findItem = driver.findElement(searchItemInList);
+        Actions action = new Actions(driver);
+        action.doubleClick(findItem).perform();
+
+        // refactor to sort out locators below!
+        driver.findElement(By.cssSelector(".input-container:nth-child(1) > #todo-input")).sendKeys(Keys.COMMAND,"a",Keys.DELETE);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        wait.until(ExpectedConditions.elementToBeClickable(findItem));
+        driver.findElement(By.cssSelector(".input-container:nth-child(1) > #todo-input")).sendKeys(newItem,Keys.ENTER);
+        wait.until(ExpectedConditions.elementToBeClickable(findItem));
     }
 
     public void deleteItem() throws InterruptedException {
-        WebElement waitForDeletion = new WebDriverWait(driver, Duration.ofSeconds(10))
-                .until(driver -> driver.findElement(deleteItemsInList));
-        WebElement deleteItem = driver.findElement(deleteItemsInList);
-        Thread.sleep(5000);
+        WebElement deleteItem = driver.findElement(deleteItemInList);
         deleteItem.click();
     }
 
@@ -61,16 +68,10 @@ public class TodoInputPage {
         deleteAll.click();
     }
 
-    // Completing single first item in list
-    public void completeItem1() {
-        WebElement completeItem1 = driver.findElement(selectItemsInList1);
-        completeItem1.click();
-    }
-
-    // Completing single second item in list
-    public void completeItem2() {
-        WebElement completeItem2 = driver.findElement(selectItemsInList2);
-        completeItem2.click();
+    // Completing single item in list by index
+    public void completeItemByIndex(Integer index) {
+        WebElement completeItemByIndex = driver.findElement(toggleItemByIndex(index));
+        completeItemByIndex.click();
     }
 
     // Completing all items in list
@@ -80,8 +81,8 @@ public class TodoInputPage {
     }
 
     // Returning items from list
-    public String getFirstItem() {
-        return driver.findElement(searchItemsInList).getText();
+    public String getIndexedItem(Integer index) {
+        return driver.findElement(clickItemByIndex(index)).getText();
     }
 
     public String countRemaining() {

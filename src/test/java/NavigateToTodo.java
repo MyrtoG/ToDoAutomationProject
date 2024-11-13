@@ -35,7 +35,7 @@ public class NavigateToTodo {
         // REMEMBER: Come back and add input using data driven testing
         // Test Case 1: Adding different values - generic input should add to list
         inputPage.inputItem("hello123");
-        assertEquals("hello123", inputPage.getFirstItem());
+        assertEquals("hello123", inputPage.getIndexedItem(1));
         inputPage.deleteList();
 
         // Test Case 1: Adding different values - blank space as input should add to list - confirm with Myrto, technically should fail as we don't want blank spaces.
@@ -49,12 +49,12 @@ public class NavigateToTodo {
 
         // Test Case 1: Adding different values - 255 characters as input should add to list
         inputPage.inputItem("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolore.");
-        assertEquals("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolore.", inputPage.getFirstItem());
+        assertEquals("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolore.", inputPage.getIndexedItem(1));
         inputPage.deleteList();
 
         // Test Case 1: Adding different values - 254 characters as input should add to list
         inputPage.inputItem("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor.");
-        assertEquals("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor.", inputPage.getFirstItem());
+        assertEquals("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor.", inputPage.getIndexedItem(1));
         inputPage.deleteList();
 
     }
@@ -65,20 +65,20 @@ public class NavigateToTodo {
         inputPage.navigate();
 
         // Test Case 2: Editing an item
-        //inputPage.inputItem("hello123");
-        //assertEquals("hello123", inputPage.getFirstItem());
-        //takeScreenshot(driver, "preEdit.png");
-        //inputPage.editItem("hello456");
-        //takeScreenshot(driver, "postEdit.png");
-        //assertEquals("hello456", inputPage.getFirstItem());
+        inputPage.inputItem("hello123");
+        assertEquals("hello123", inputPage.getIndexedItem(1));
+        takeScreenshot(driver, "1.png");
+        inputPage.editItem("hello456");
+        assertEquals("hello456", inputPage.getIndexedItem(1));
+        takeScreenshot(driver, "2.png");
 
         // Test Case 2: Deleting an item
-        //inputPage.inputItem("hello123");
-        //assertEquals("hello123", inputPage.getFirstItem());
-        //takeScreenshot(driver, "preDelete.png");
-        //inputPage.deleteItem();
-        //takeScreenshot(driver, "postDelete.png");
-        //assertEquals("hello456", inputPage.getFirstItem());
+        takeScreenshot(driver, "preDelete.png");
+        assertEquals("hello456", inputPage.getIndexedItem(1));
+        assertFalse(inputPage.countRemaining().isBlank());
+        inputPage.deleteItem();
+        // Still needs an assertion that Element cannot be found!
+        takeScreenshot(driver, "postDelete.png");
     }
 
     @Test
@@ -92,7 +92,7 @@ public class NavigateToTodo {
         inputPage.inputItem("hello3");
         assertEquals("3 items left!", inputPage.countRemaining());
         // single complete
-        inputPage.completeItem1();
+        inputPage.completeItemByIndex(1);
         assertEquals("2 items left!", inputPage.countRemaining());
         // all complete
         inputPage.completeAll();
@@ -104,7 +104,7 @@ public class NavigateToTodo {
         inputPage.completeAll();
         assertEquals("0 items left!", inputPage.countRemaining());
         // single incomplete
-        inputPage.completeItem1();
+        inputPage.completeItemByIndex(2);
         assertEquals("1 item left!", inputPage.countRemaining());
         inputPage.deleteList();
     }
@@ -121,8 +121,8 @@ public class NavigateToTodo {
         inputPage.inputItem("hello4");
         assertEquals("4 items left!", inputPage.countRemaining());
         // Complete two items
-        inputPage.completeItem1();
-        inputPage.completeItem2();
+        inputPage.completeItemByIndex(1);
+        inputPage.completeItemByIndex(2);
         assertEquals("2 items left!", inputPage.countRemaining());
         // Filter to Active view
         // Add assertion
@@ -163,7 +163,7 @@ public class NavigateToTodo {
 
         // Test Case 1: Adding different values - symbols as input ("!@£$%^&*(){}[]:";'<>?") should add to list, currently it doesn't
         inputPage.inputItem("!@£$%^&*(){}[]:\";'<>?");
-        assertEquals("!@£$%^&*(){}[]:\";'<>?", inputPage.getFirstItem());
+        assertEquals("!@£$%^&*(){}[]:\";'<>?", inputPage.getIndexedItem(1));
         inputPage.deleteList();
 
     }
