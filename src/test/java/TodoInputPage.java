@@ -11,7 +11,8 @@ public class TodoInputPage {
     protected WebDriver driver;
     private By inputBoxBy = By.id("todo-input");
     private By searchItemsInList = By.cssSelector("li:nth-child(1)");
-    private By selectItemsInList = By.cssSelector("li:nth-child(1) .toggle");
+    private By selectItemsInList1 = By.cssSelector("li:nth-child(1) .toggle");
+    private By selectItemsInList2 = By.cssSelector("li:nth-child(2) .toggle");
     private By deleteItemsInList = By.cssSelector("li:nth-child(1) .destroy");
     private By completeAllItems = By.className("toggle-all");
     private By deleteCompleted = By.className("clear-completed");
@@ -60,11 +61,16 @@ public class TodoInputPage {
         deleteAll.click();
     }
 
-    // Completing single item in list
-    public void completeItem() {
-        WebElement completeItem = driver.findElement(selectItemsInList);
-        completeItem.click();
+    // Completing single first item in list
+    public void completeItem1() {
+        WebElement completeItem1 = driver.findElement(selectItemsInList1);
+        completeItem1.click();
+    }
 
+    // Completing single second item in list
+    public void completeItem2() {
+        WebElement completeItem2 = driver.findElement(selectItemsInList2);
+        completeItem2.click();
     }
 
     // Completing all items in list
@@ -73,16 +79,13 @@ public class TodoInputPage {
         completeAll.click();
     }
 
-
     // Returning items from list
     public String getFirstItem() {
         return driver.findElement(searchItemsInList).getText();
-
     }
 
     public String countRemaining() {
         return driver.findElement(countRemaining).getText();
-
     }
 
 }

@@ -28,7 +28,7 @@ public class NavigateToTodo {
     }
 
     @Test
-    void ShouldCheckValues() throws Exception {
+    void shouldCheckValues() throws Exception {
         TodoInputPage inputPage = new TodoInputPage(driver);
         inputPage.navigate();
 
@@ -60,7 +60,7 @@ public class NavigateToTodo {
     }
 
     @Test
-    void ShouldEditDeleteValues() throws Exception {
+    void shouldEditDeleteValues() throws Exception {
         TodoInputPage inputPage = new TodoInputPage(driver);
         inputPage.navigate();
 
@@ -82,7 +82,7 @@ public class NavigateToTodo {
     }
 
     @Test
-    void ShouldCompleteIncompleteValues() throws Exception {
+    void shouldCompleteIncompleteValues() throws Exception {
         TodoInputPage inputPage = new TodoInputPage(driver);
         inputPage.navigate();
 
@@ -92,7 +92,7 @@ public class NavigateToTodo {
         inputPage.inputItem("hello3");
         assertEquals("3 items left!", inputPage.countRemaining());
         // single complete
-        inputPage.completeItem();
+        inputPage.completeItem1();
         assertEquals("2 items left!", inputPage.countRemaining());
         // all complete
         inputPage.completeAll();
@@ -104,9 +104,42 @@ public class NavigateToTodo {
         inputPage.completeAll();
         assertEquals("0 items left!", inputPage.countRemaining());
         // single incomplete
-        inputPage.completeItem();
+        inputPage.completeItem1();
         assertEquals("1 item left!", inputPage.countRemaining());
         inputPage.deleteList();
+    }
+
+    @Test
+    void ShouldFilterClearCompletedValues() throws Exception {
+        TodoInputPage inputPage = new TodoInputPage(driver);
+        inputPage.navigate();
+
+        // Test Case 4: Filtering, reordering and clearing the list of items - Filter by completed
+        inputPage.inputItem("hello1");
+        inputPage.inputItem("hello2");
+        inputPage.inputItem("hello3");
+        inputPage.inputItem("hello4");
+        assertEquals("4 items left!", inputPage.countRemaining());
+        // Complete two items
+        inputPage.completeItem1();
+        inputPage.completeItem2();
+        assertEquals("2 items left!", inputPage.countRemaining());
+        // Filter to Active view
+        // Add assertion
+        // Filter to Completed view
+        // Add assertion
+
+        // Test Case 4: Filtering, reordering and clearing the list of items - Clear completed
+        // Filter to All view
+        // Add assertion
+        // Clear completed
+        // Add assertion
+        inputPage.deleteList();
+
+        // Test Case 4: Filtering, reordering and clearing the list of items - Reorder list (expected to fail)
+        // Add inputs
+        // Add steps to drag input
+        // Add assertion
     }
 
 
