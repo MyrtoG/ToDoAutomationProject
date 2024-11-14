@@ -73,11 +73,12 @@ public class NavigateToTodo {
         takeScreenshot(driver, "2.png");
 
         // Test Case 2: Deleting an item
+        inputPage.inputItem("hello123");
         takeScreenshot(driver, "preDelete.png");
-        assertEquals("hello456", inputPage.getIndexedItem(1));
-        assertFalse(inputPage.countRemaining().isBlank());
+        assertEquals("2 items left!", inputPage.countRemaining());
         inputPage.deleteItem();
         // Still needs an assertion that Element cannot be found!
+        assertEquals("1 item left!", inputPage.countRemaining());
         takeScreenshot(driver, "postDelete.png");
     }
 
