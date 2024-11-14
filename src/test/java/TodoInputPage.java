@@ -23,6 +23,10 @@ public class TodoInputPage {
         return By.cssSelector(String.format("li:nth-child(%s) .toggle",index));
     }
 
+    // Starting browsers
+    //public launchBrowsers(WebDriver driver) {
+
+    //}
 
     // Navigating around the site
     public TodoInputPage(WebDriver driver) {

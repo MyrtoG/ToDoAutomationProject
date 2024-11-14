@@ -3,12 +3,16 @@ import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.openqa.selenium.*;
+import org.openqa.selenium.By;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 
 import java.io.File;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class NavigateToTodo {
     public static ChromeDriver driver;
@@ -16,6 +20,7 @@ public class NavigateToTodo {
     @BeforeAll
     static void launchBrowser() {
         WebDriverManager.chromedriver().setup();
+        WebDriverManager.firefoxdriver().setup();
         driver = new ChromeDriver();
     }
 
@@ -115,26 +120,41 @@ public class NavigateToTodo {
         TodoInputPage inputPage = new TodoInputPage(driver);
         inputPage.navigate();
 
-        // Test Case 4: Filtering, reordering and clearing the list of items - Filter by completed
+        // Test Case 4: Filtering, reordering and clearing the list of items - Filtering
         inputPage.inputItem("hello1");
         inputPage.inputItem("hello2");
         inputPage.inputItem("hello3");
         inputPage.inputItem("hello4");
         assertEquals("4 items left!", inputPage.countRemaining());
-        // Complete two items
+        assertEquals("hello1", inputPage.getIndexedItem(1));
+
+        //Complete two items
         inputPage.completeItemByIndex(1);
         inputPage.completeItemByIndex(2);
         assertEquals("2 items left!", inputPage.countRemaining());
+
         // Filter to Active view
-        // Add assertion
+        inputPage.driver.findElement(By.linkText("Active")).click();
+        assertEquals("hello3", inputPage.getIndexedItem(1));
+        assertEquals("hello4", inputPage.getIndexedItem(2));
+
         // Filter to Completed view
-        // Add assertion
+        driver.findElement(By.linkText("Completed")).click();
+        assertEquals("hello1", inputPage.getIndexedItem(1));
+        assertEquals("hello2", inputPage.getIndexedItem(2));
 
         // Test Case 4: Filtering, reordering and clearing the list of items - Clear completed
-        // Filter to All view
-        // Add assertion
-        // Clear completed
-        // Add assertion
+        // Filter back to All view
+        driver.findElement(By.linkText("All")).click();
+        assertEquals("hello1", inputPage.getIndexedItem(1));
+        assertEquals("hello2", inputPage.getIndexedItem(2));
+        assertEquals("hello3", inputPage.getIndexedItem(3));
+        assertEquals("hello4", inputPage.getIndexedItem(4));
+
+        driver.findElement(By.className("clear-completed")).click();
+        assertEquals("hello3", inputPage.getIndexedItem(1));
+        assertEquals("hello4", inputPage.getIndexedItem(2));
+
         inputPage.deleteList();
 
         // Test Case 4: Filtering, reordering and clearing the list of items - Reorder list (expected to fail)
