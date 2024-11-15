@@ -23,11 +23,6 @@ public class TodoInputPage {
         return By.cssSelector(String.format("li:nth-child(%s) .toggle",index));
     }
 
-    // Starting browsers
-    //public launchBrowsers(WebDriver driver) {
-
-    //}
-
     // Navigating around the site
     public TodoInputPage(WebDriver driver) {
         this.driver = driver;
@@ -47,12 +42,10 @@ public class TodoInputPage {
         inputItem.sendKeys(item+Keys.ENTER);
     }
 
-    public void editItem(String newItem) throws InterruptedException {
+    public void editItem(String newItem) {
         WebElement findItem = driver.findElement(searchItemInList);
         Actions action = new Actions(driver);
         action.doubleClick(findItem).perform();
-
-        // refactor to sort out locators below!
         driver.findElement(By.cssSelector(".input-container:nth-child(1) > #todo-input")).sendKeys(Keys.COMMAND,"a",Keys.DELETE);
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         wait.until(ExpectedConditions.elementToBeClickable(findItem));
@@ -60,7 +53,7 @@ public class TodoInputPage {
         wait.until(ExpectedConditions.elementToBeClickable(findItem));
     }
 
-    public void deleteItem() throws InterruptedException {
+    public void deleteItem() {
         WebElement deleteItem = driver.findElement(deleteItemInList);
         deleteItem.click();
     }
