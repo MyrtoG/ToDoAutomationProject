@@ -2,7 +2,10 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvFileSource;
 import org.openqa.selenium.By;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
@@ -44,38 +47,28 @@ public class NavigateToTodo {
         }
     }
 
-    @Test
-    void shouldCheckValues() throws Exception {
+    @DisplayName("Test input data")
+    @ParameterizedTest(name = "Test input {0} should return {1}")
+    @CsvFileSource(resources = "/input_data.csv")
+    void shouldCheckValues(String inputData, String resultData) {
         for (WebDriver driver : Drivers.keySet()) {
             TodoInputPage inputPage = new TodoInputPage(driver);
             inputPage.navigate();
-
-            // REMEMBER: Come back and add input using data driven testing
-            // Test Case 1: Adding different values - generic input should add to list
-            inputPage.inputItem("hello123");
-            assertEquals("hello123", inputPage.getIndexedItem(1));
+            inputPage.inputItem(inputData);
+            assertEquals(resultData, inputPage.getIndexedItem(1));
             inputPage.deleteList();
+        }
+    }
 
-            // Test Case 1: Adding different values - blank space as input should add to list - confirm with Myrto, technically should fail as we don't want blank spaces.
+    @Test
+    void shouldTestNullValues() {
+        for (WebDriver driver : Drivers.keySet()) {
+            TodoInputPage inputPage = new TodoInputPage(driver);
+            inputPage.navigate();
             inputPage.inputItem(" ");
             assertEquals(" ", driver.findElement(By.id("todo-input")).getAttribute("value"));
             inputPage.navigate();
-
-            // Test Case 1: Adding different values - no input as test should not add to list - will add later & speak to Neil
-            //driver.findElement(By.id("todo-input")).click().sendKeys(Keys.ENTER);
-            //assertEquals("What needs to be done?", driver.findElement(By.id("todo-input")).getAttribute("value"));
-
-            // Test Case 1: Adding different values - 255 characters as input should add to list
-            inputPage.inputItem("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolore.");
-            assertEquals("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolore.", inputPage.getIndexedItem(1));
-            inputPage.deleteList();
-
-            // Test Case 1: Adding different values - 254 characters as input should add to list
-            inputPage.inputItem("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor.");
-            assertEquals("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor.", inputPage.getIndexedItem(1));
-            inputPage.deleteList();
         }
-
     }
 
     @Test
@@ -97,7 +90,6 @@ public class NavigateToTodo {
             takeScreenshot(driver, String.format("preDelete_%s.png", Drivers.get(driver)));
             assertEquals("2 items left!", inputPage.countRemaining());
             inputPage.deleteItem();
-            // Still needs an assertion that Element cannot be found!
             assertEquals("1 item left!", inputPage.countRemaining());
             takeScreenshot(driver, String.format("postDelete_%s.png", Drivers.get(driver)));
         }
@@ -123,7 +115,7 @@ public class NavigateToTodo {
             // all incomplete
             inputPage.completeAll();
             assertEquals("3 items left!", inputPage.countRemaining());
-            // all complete - gets repetitive here, perhaps we rearrange?
+            // all complete
             inputPage.completeAll();
             assertEquals("0 items left!", inputPage.countRemaining());
             // single incomplete
@@ -169,20 +161,12 @@ public class NavigateToTodo {
             assertEquals("hello2", inputPage.getIndexedItem(2));
             assertEquals("hello3", inputPage.getIndexedItem(3));
             assertEquals("hello4", inputPage.getIndexedItem(4));
-
             driver.findElement(By.className("clear-completed")).click();
             assertEquals("hello3", inputPage.getIndexedItem(1));
             assertEquals("hello4", inputPage.getIndexedItem(2));
-
             inputPage.deleteList();
-
-            // Test Case 4: Filtering, reordering and clearing the list of items - Reorder list (expected to fail)
-            // Add inputs
-            // Add steps to drag input
-            // Add assertion
         }
     }
-
 
         // REMEMBER: These tests fail and need to be logged as bugs for the team to fix
     @Test
@@ -209,6 +193,11 @@ public class NavigateToTodo {
             inputPage.inputItem("!@£$%^&*(){}[]:\";'<>?");
             assertEquals("!@£$%^&*(){}[]:\";'<>?", inputPage.getIndexedItem(1));
             inputPage.deleteList();
+
+            // Test Case 1: Adding different values - no input as test should not add to list - will add later & speak to Neil
+            //driver.findElement(By.id("todo-input")).click().sendKeys(Keys.ENTER);
+            //assertEquals("What needs to be done?", driver.findElement(By.id("todo-input")).getAttribute("value"));
+
         }
     }
 
